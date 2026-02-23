@@ -1,0 +1,59 @@
+CREATE TABLE IF NOT EXISTS tasks (
+  id VARCHAR(64) PRIMARY KEY,
+  text TEXT NOT NULL,
+  priority VARCHAR(16) NOT NULL,
+  category VARCHAR(16) NOT NULL,
+  repeat_type VARCHAR(16) NOT NULL,
+  completed TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL,
+  completed_at DATETIME NULL,
+  time_spent INT NOT NULL DEFAULT 0,
+  next_due DATETIME NULL
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+  id VARCHAR(64) PRIMARY KEY,
+  amount DECIMAL(12,2) NOT NULL,
+  type VARCHAR(16) NOT NULL,
+  description TEXT NOT NULL,
+  category VARCHAR(32) NOT NULL,
+  date DATETIME NOT NULL,
+  month INT NOT NULL,
+  year INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS budget (
+  id INT PRIMARY KEY,
+  amount DECIMAL(12,2) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  target_amount DECIMAL(12,2) NOT NULL,
+  current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  target_date DATE NOT NULL,
+  created_at DATETIME NOT NULL,
+  completed TINYINT(1) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS debts (
+  id VARCHAR(64) PRIMARY KEY,
+  type VARCHAR(16) NOT NULL,
+  person_name VARCHAR(255) NOT NULL,
+  total_amount DECIMAL(12,2) NOT NULL,
+  paid_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  due_date DATE NOT NULL,
+  created_at DATETIME NOT NULL,
+  status VARCHAR(16) NOT NULL DEFAULT 'active'
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  frequency VARCHAR(16) NOT NULL,
+  next_payment DATE NOT NULL,
+  created_at DATETIME NOT NULL,
+  status VARCHAR(16) NOT NULL DEFAULT 'active'
+);

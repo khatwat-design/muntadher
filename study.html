@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الدراسة — فصول · محاضرات · مهام أكاديمية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1>الدراسة</h1><p class="subtitle">تمريض · فصول · محاضرات</p></div>
+      <nav class="sidebar-nav">
+        <a class="nav-btn" href="/command-center.html">لوحة القيادة</a>
+        <a class="nav-btn" href="/khotawat.html">خطوات</a>
+        <a class="nav-btn" href="/jahzeen.html">جاهزين</a>
+        <a class="nav-btn" href="/rahal.html">رحال</a>
+        <a class="nav-btn active" href="/study.html">الدراسة</a>
+        <a class="nav-btn" href="/finance-unified.html">المالية الموحدة</a>
+        <a class="nav-btn" href="/workspace.html?w=study">مهام الدراسة</a>
+        <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="workspace-tabs">
+        <button class="wtab active" data-tab="terms">الفصول الدراسية</button>
+        <button class="wtab" data-tab="items">جدول المحاضرات والمهام</button>
+      </div>
+
+      <div id="termsPanel" class="panel active">
+        <section class="section-card">
+          <h2>الفصول / الفترات الدراسية</h2>
+          <div class="form-row">
+            <input type="text" id="termName" placeholder="اسم الفصل">
+            <input type="date" id="termStart">
+            <input type="date" id="termEnd">
+            <button id="termAdd" class="add-btn">إضافة فصل</button>
+          </div>
+          <ul id="termsList" class="item-list"></ul>
+        </section>
+      </div>
+
+      <div id="itemsPanel" class="panel">
+        <section class="section-card">
+          <h2>جدول المحاضرات والمهام الأكاديمية</h2>
+          <div class="form-row">
+            <select id="itemTerm"></select>
+            <input type="text" id="itemTitle" placeholder="العنوان (محاضرة، تدريب، امتحان)">
+            <select id="itemType"><option value="lecture">محاضرة</option><option value="practical">تدريب عملي</option><option value="exam">امتحان</option></select>
+            <input type="datetime-local" id="itemScheduled" placeholder="الموعد">
+            <button id="itemAdd" class="add-btn">إضافة</button>
+          </div>
+          <ul id="itemsList" class="item-list"></ul>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/pages/study.js"></script>
+</body>
+</html>

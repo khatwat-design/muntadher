@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خطوات — Roadmap · Backlog · توثيق تقني</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h1>خطوات</h1><p class="subtitle">خريطة الطريق · Backlog · توثيق</p></div>
+      <nav class="sidebar-nav">
+        <a class="nav-btn" href="/command-center.html">لوحة القيادة</a>
+        <a class="nav-btn active" href="/khotawat.html">خطوات</a>
+        <a class="nav-btn" href="/jahzeen.html">جاهزين</a>
+        <a class="nav-btn" href="/rahal.html">رحال</a>
+        <a class="nav-btn" href="/study.html">الدراسة</a>
+        <a class="nav-btn" href="/finance-unified.html">المالية الموحدة</a>
+        <a class="nav-btn" href="/workspace.html?w=khotawat">مهام خطوات</a>
+        <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="workspace-tabs">
+        <button class="wtab active" data-tab="roadmap">خريطة الطريق</button>
+        <button class="wtab" data-tab="backlog">Backlog</button>
+        <button class="wtab" data-tab="docs">التوثيق التقني</button>
+      </div>
+
+      <div id="roadmapPanel" class="panel active">
+        <section class="section-card">
+          <h2>خريطة الطريق</h2>
+          <div class="form-row">
+            <input type="text" id="roadmapTitle" placeholder="العنوان">
+            <input type="date" id="roadmapTarget">
+            <select id="roadmapType"><option value="feature">ميزة</option><option value="milestone">معلم</option><option value="epic">Epic</option></select>
+            <select id="roadmapStatus"><option value="planned">مخطط</option><option value="in_progress">قيد التنفيذ</option><option value="done">منتهي</option></select>
+            <button id="roadmapAdd" class="add-btn">إضافة</button>
+          </div>
+          <ul id="roadmapList" class="item-list"></ul>
+        </section>
+      </div>
+
+      <div id="backlogPanel" class="panel">
+        <section class="section-card">
+          <h2>Backlog</h2>
+          <div class="form-row">
+            <input type="text" id="backlogTitle" placeholder="العنوان">
+            <select id="backlogType"><option value="feature">ميزة</option><option value="bug">خلل</option><option value="refactor">إعادة هيكلة</option></select>
+            <select id="backlogPriority"><option value="low">منخفض</option><option value="medium">متوسط</option><option value="high">عالي</option></select>
+            <select id="backlogStatus"><option value="backlog">Backlog</option><option value="todo">مهام</option><option value="in_progress">قيد التنفيذ</option><option value="done">منتهي</option></select>
+            <input type="number" id="backlogPoints" placeholder="نقاط" min="0" style="width:70px">
+            <button id="backlogAdd" class="add-btn">إضافة</button>
+          </div>
+          <ul id="backlogList" class="item-list"></ul>
+        </section>
+      </div>
+
+      <div id="docsPanel" class="panel">
+        <section class="section-card">
+          <h2>التوثيق التقني</h2>
+          <div class="form-row">
+            <input type="text" id="docTitle" placeholder="عنوان المستند">
+            <input type="text" id="docCategory" placeholder="الفئة">
+            <button id="docAdd" class="add-btn">إضافة مستند</button>
+          </div>
+          <ul id="docsList" class="item-list"></ul>
+          <div id="docEditor" class="doc-editor hidden">
+            <h3 id="docEditorTitle"></h3>
+            <textarea id="docContent" rows="12" placeholder="المحتوى..."></textarea>
+            <button id="docSave" class="add-btn">حفظ</button>
+            <button id="docCancel" class="secondary-btn">إلغاء</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/pages/khotawat.js"></script>
+</body>
+</html>

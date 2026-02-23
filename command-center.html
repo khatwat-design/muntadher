@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة القيادة — مدير المهام الذكي</title>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1>لوحة القيادة</h1>
+                <p class="subtitle">نظرة شاملة — خطوات، جاهزين، رحال، الدراسة، الشخصي</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-btn active" href="/command-center.html">لوحة القيادة</a>
+                <a class="nav-btn" href="/index.html">المهام (شخصي)</a>
+                <a class="nav-btn" href="/finance.html">المالية الشخصية</a>
+                <a class="nav-btn" href="/analytics.html">التحليلات</a>
+                <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div id="commandCenterRoot" class="tab-content active">
+                <section class="dashboard-section">
+                    <h2 class="section-title">ملخص عام</h2>
+                    <div id="summaryCards" class="stats-grid command-summary"></div>
+                </section>
+                <section class="dashboard-section">
+                    <h2 class="section-title">المساحات</h2>
+                    <div id="workspaceCards" class="workspace-cards"></div>
+                </section>
+                <section class="dashboard-section">
+                    <div class="dashboard-two-col">
+                        <div>
+                            <h2 class="section-title">تنبيهات</h2>
+                            <div id="notificationsList" class="notifications-list"></div>
+                        </div>
+                        <div>
+                            <h2 class="section-title">أحداث قادمة</h2>
+                            <div id="upcomingEvents" class="events-list"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="/src/pages/commandCenter.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدير المهام الذكي - منتظر العنزي</title>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1>مدير المهام الذكي</h1>
+                <p class="subtitle">مرحباً بك يا منتظر العنزي</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-btn" href="/command-center.html">لوحة القيادة</a>
+                <a class="nav-btn active" href="/index.html">المهام</a>
+                <a class="nav-btn" href="/finance.html">المالية الشخصية</a>
+                <a class="nav-btn" href="/analytics.html">التحليلات</a>
+                <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tasks Page -->
+            <div id="tasksTab" class="tab-content active">
+                <!-- Task Input Section -->
+                <section class="task-input-section">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="بحث سريع في المهام..." class="search-input">
+                        <button id="clearSearchBtn" class="clear-search-btn">✕</button>
+                    </div>
+                    <div class="input-container">
+                        <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..." class="task-input">
+                        <select id="categorySelect" class="category-select">
+                            <option value="personal">شخصي</option>
+                            <option value="work">عمل</option>
+                            <option value="study">دراسة</option>
+                        </select>
+                        <select id="prioritySelect" class="priority-select">
+                            <option value="normal">عادي</option>
+                            <option value="important">مهم</option>
+                            <option value="urgent">عاجل</option>
+                        </select>
+                        <select id="repeatSelect" class="repeat-select">
+                            <option value="none">بدون تكرار</option>
+                            <option value="daily">يومي</option>
+                            <option value="weekly">أسبوعي</option>
+                            <option value="monthly">شهري</option>
+                        </select>
+                        <button id="addTaskBtn" class="add-btn">إضافة</button>
+                    </div>
+                </section>
+
+                <!-- Stats Section -->
+                <section class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>إجمالي المهام</h3>
+                            <p id="totalTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>المهام المكتملة</h3>
+                            <p id="completedTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>معدل الإنتاجية</h3>
+                            <p id="productivityRate" class="stat-number">0%</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>المهام العاجلة</h3>
+                            <p id="urgentTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>العمل</h3>
+                            <p id="workTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>شخصي</h3>
+                            <p id="personalTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>دراسة</h3>
+                            <p id="studyTasks" class="stat-number">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>متكررة</h3>
+                            <p id="recurringTasks" class="stat-number">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tasks List Section -->
+                <section class="tasks-section">
+                    <div class="section-header">
+                        <h2>قائمة المهام</h2>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">الكل</button>
+                            <button class="filter-btn" data-filter="pending">قيد التنفيذ</button>
+                            <button class="filter-btn" data-filter="completed">مكتمل</button>
+                        </div>
+                        <div class="category-buttons">
+                            <button class="category-btn active" data-category="all">الكل</button>
+                            <button class="category-btn" data-category="work">العمل</button>
+                            <button class="category-btn" data-category="personal">شخصي</button>
+                            <button class="category-btn" data-category="study">دراسة</button>
+                        </div>
+                        <div class="data-actions">
+                            <button id="exportTasksBtn" class="secondary-btn">تصدير المهام</button>
+                            <label class="secondary-btn file-label">
+                                استيراد المهام
+                                <input type="file" id="importTasksInput" accept="application/json">
+                            </label>
+                            <button id="clearTasksBtn" class="danger-btn">مسح المهام</button>
+                        </div>
+                    </div>
+                    <div id="tasksList" class="tasks-list">
+                        <!-- Tasks will be added here dynamically -->
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/pages/tasks.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+services:
+  # Backend Service
+  - type: web
+    name: mdre-backend
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: "cd .. && npm install"
+    startCommand: "node index.js"
+    envVars:
+      - key: GOOGLE_APPS_SCRIPT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+
+  # Frontend Service
+  - type: web
+    name: mdre-frontend
+    runtime: static
+    plan: free
+    buildCommand: "npm run build"
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://mdre-backend.onrender.com/api/*
+    envVars:
+      - key: VITE_API_URL
+        value: https://mdre-backend.onrender.com

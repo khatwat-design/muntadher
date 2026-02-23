@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المالية الشخصية - مدير المهام</title>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1>مدير المهام الذكي</h1>
+                <p class="subtitle">مرحباً بك يا منتظر العنزي</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-btn" href="/index.html">المهام</a>
+                <a class="nav-btn active" href="/finance.html">المالية الشخصية</a>
+                <a class="nav-btn" href="/analytics.html">التحليلات</a>
+                <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="financeTab" class="tab-content active">
+                <!-- Finance Input Section -->
+                <section class="finance-input-section">
+                    <h2>إضافة معاملة مالية</h2>
+                    <div class="finance-input-container">
+                        <div class="input-row">
+                            <input type="number" id="amountInput" placeholder="المبلغ" class="amount-input" step="0.01">
+                            <select id="transactionType" class="transaction-type-select">
+                                <option value="expense">مصروف</option>
+                                <option value="income">دخل</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <input type="text" id="descriptionInput" placeholder="الوصف" class="description-input">
+                            <select id="categoryFinanceSelect" class="finance-category-select">
+                                <option value="food">طعام</option>
+                                <option value="transport">مواصلات</option>
+                                <option value="shopping">تسوق</option>
+                                <option value="bills">فواتير</option>
+                                <option value="entertainment">ترفيه</option>
+                                <option value="health">صحة</option>
+                                <option value="education">تعليم</option>
+                                <option value="subscriptions">اشتراكات</option>
+                                <option value="debt">ديون</option>
+                                <option value="rent">إيجار</option>
+                                <option value="utilities">خدمات</option>
+                                <option value="salary">راتب</option>
+                                <option value="investment">استثمار</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                        </div>
+                        <button id="addTransactionBtn" class="add-finance-btn">إضافة معاملة</button>
+                    </div>
+                </section>
+
+                <!-- Data Management Section -->
+                <section class="data-actions-section">
+                    <h2>إدارة البيانات</h2>
+                    <div class="data-actions">
+                        <button id="exportFinanceBtn" class="secondary-btn">تصدير المالية</button>
+                        <label class="secondary-btn file-label">
+                            استيراد المالية
+                            <input type="file" id="importFinanceInput" accept="application/json">
+                        </label>
+                        <button id="clearFinanceBtn" class="danger-btn">مسح المالية</button>
+                    </div>
+                </section>
+
+                <!-- Finance Overview Section -->
+                <section class="finance-overview-section">
+                    <h2>نظرة عامة</h2>
+                    <div class="finance-stats-grid">
+                        <div class="finance-stat-card income-card">
+                            <h3>إجمالي الدخل</h3>
+                            <p id="totalIncome" class="finance-stat-number">0 د.ع</p>
+                        </div>
+                        <div class="finance-stat-card expense-card">
+                            <h3>إجمالي المصروفات</h3>
+                            <p id="totalExpenses" class="finance-stat-number">0 د.ع</p>
+                        </div>
+                        <div class="finance-stat-card balance-card">
+                            <h3>الرصيد الحالي</h3>
+                            <p id="currentBalance" class="finance-stat-number">0 د.ع</p>
+                        </div>
+                        <div class="finance-stat-card savings-card">
+                            <h3>المدخرات</h3>
+                            <p id="totalSavings" class="finance-stat-number">0 د.ع</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Budget Section -->
+                <section class="budget-section">
+                    <h2>الميزانية الشهرية</h2>
+                    <div class="budget-container">
+                        <div class="budget-input">
+                            <input type="number" id="monthlyBudget" placeholder="الميزانية الشهرية" class="budget-input-field" step="0.01">
+                            <button id="setBudgetBtn" class="set-budget-btn">تحديد الميزانية</button>
+                        </div>
+                        <div class="budget-progress">
+                            <div class="progress-info">
+                                <span>المصروفات الحالية: <span id="currentExpenses">0</span> د.ع</span>
+                                <span>المتبقي: <span id="remainingBudget">0</span> د.ع</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="budgetProgressBar" class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Transactions -->
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>المعاملات الأخيرة</h2>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-finance-filter="all">الكل</button>
+                            <button class="filter-btn" data-finance-filter="income">الدخل</button>
+                            <button class="filter-btn" data-finance-filter="expense">المصروفات</button>
+                        </div>
+                    </div>
+                    <div id="transactionsList" class="transactions-list">
+                        <!-- Transactions will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Financial Goals -->
+                <section class="financial-goals-section">
+                    <h2>الأهداف المالية</h2>
+                    <div class="goals-input-container">
+                        <input type="text" id="goalNameInput" placeholder="اسم الهدف" class="goal-input">
+                        <input type="number" id="goalAmountInput" placeholder="المبلغ المستهدف (د.ع)" class="goal-input" step="0.01">
+                        <input type="date" id="goalDateInput" class="goal-input">
+                        <button id="addGoalBtn" class="add-goal-btn">إضافة هدف</button>
+                    </div>
+                    <div id="goalsList" class="goals-list">
+                        <!-- Goals will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Debt Management Section -->
+                <section class="debt-management-section">
+                    <h2>إدارة الديون</h2>
+                    <div class="debt-input-container">
+                        <select id="debtTypeSelect" class="debt-type-select">
+                            <option value="creditor">دائن</option>
+                            <option value="debtor">مدين</option>
+                        </select>
+                        <input type="text" id="debtNameInput" placeholder="اسم الشخص/الجهة" class="debt-input">
+                        <input type="number" id="debtAmountInput" placeholder="المبلغ الإجمالي (د.ع)" class="debt-input" step="0.01">
+                        <input type="date" id="debtDueDateInput" class="debt-input">
+                        <button id="addDebtBtn" class="add-debt-btn">إضافة دين</button>
+                    </div>
+                    <div id="debtsList" class="debts-list">
+                        <!-- Debts will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Subscriptions Management Section -->
+                <section class="subscriptions-section">
+                    <h2>إدارة الاشتراكات</h2>
+                    <div class="subscription-input-container">
+                        <input type="text" id="subscriptionNameInput" placeholder="اسم الاشتراك" class="subscription-input">
+                        <input type="number" id="subscriptionAmountInput" placeholder="المبلغ الشهري (د.ع)" class="subscription-input" step="0.01">
+                        <select id="subscriptionFrequency" class="subscription-select">
+                            <option value="monthly">شهري</option>
+                            <option value="yearly">سنوي</option>
+                            <option value="weekly">أسبوعي</option>
+                        </select>
+                        <input type="date" id="subscriptionNextPayment" class="subscription-input">
+                        <button id="addSubscriptionBtn" class="add-subscription-btn">إضافة اشتراك</button>
+                    </div>
+                    <div id="subscriptionsList" class="subscriptions-list">
+                        <!-- Subscriptions will be added here dynamically -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/pages/finance.js"></script>
+</body>
+</html>

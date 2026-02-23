@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment (لا ترفع أبداً)
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# PM2
+.pm2/
+
+# Optional
+*.tgz
