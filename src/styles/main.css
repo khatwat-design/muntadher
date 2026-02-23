@@ -11,6 +11,13 @@ body {
     color: #ffffff;
     line-height: 1.6;
     direction: rtl;
+    -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 768px) {
+    body {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+        font-size: 16px;
+    }
 }
 
 
@@ -51,7 +58,14 @@ body {
     }
     .nav-label { display: none; }
     .nav-btn { padding: 10px 14px; font-size: 0.9rem; min-height: 44px; }
-    .main-content { padding: 12px 16px; min-width: 0; gap: 20px; }
+    .main-content {
+        padding: 12px 16px;
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        min-width: 0;
+        gap: 20px;
+    }
+    .sidebar-brand h1 { font-size: 1.35rem; }
 
     /* المالية الشخصية — هاتف */
     .finance-input-section,
@@ -147,6 +161,175 @@ body {
         width: 100%;
         min-height: 48px;
     }
+
+    /* عام: أزرار وعناصر تفاعلية */
+    .add-btn, .secondary-btn, .danger-btn, .small-btn {
+        min-height: 44px;
+        padding: 10px 18px;
+        font-size: 1rem;
+    }
+    .small-btn { min-height: 40px; padding: 8px 14px; }
+    input:not([type="checkbox"]):not([type="radio"]),
+    select, textarea, .task-input, .search-input {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+    input[type="month"], input[type="date"], input[type="datetime-local"] {
+        min-height: 44px;
+    }
+
+    /* الشخصي: المهام */
+    .task-input-section { padding: 16px; margin-bottom: 16px; }
+    .task-input-section .input-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .task-input-section .task-input,
+    .task-input-section .category-select,
+    .task-input-section .priority-select,
+    .task-input-section .repeat-select {
+        min-width: 100%;
+        width: 100%;
+    }
+    .task-input-section .add-btn { width: 100%; }
+    .search-container { margin-bottom: 12px; }
+    .stats-section { margin-bottom: 20px; }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .stat-card { padding: 16px; }
+    .stat-number { font-size: 1.5rem; }
+    .tasks-section { padding: 16px; }
+    .tasks-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .filter-buttons, .category-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .filter-btn, .category-btn {
+        min-height: 42px;
+        padding: 10px 14px;
+    }
+    .tasks-section .data-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .tasks-section .secondary-btn,
+    .tasks-section .danger-btn,
+    .tasks-section .file-label {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+    }
+    .task-item {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px;
+        gap: 10px;
+    }
+    .task-item .task-meta { flex-wrap: wrap; gap: 6px; }
+    .task-item .task-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding-top: 8px;
+        border-top: 1px solid #333;
+    }
+    .task-item .task-btn { min-height: 42px; padding: 10px 16px; }
+
+    /* مساحات العمل: خطوات، جاهزين، رحال، دراسة */
+    .section-card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .section-card h2 { font-size: 1.2rem; margin-bottom: 12px; }
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    .form-row input, .form-row select {
+        min-width: 100%;
+        width: 100%;
+        min-height: 44px;
+        padding: 12px;
+    }
+    .form-row .add-btn { width: 100%; min-height: 48px; }
+    .item-list { padding: 0; }
+    .item-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 0;
+        border-bottom: 1px solid #2d2d2d;
+    }
+    .item-row .row-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .item-row .small-btn { min-height: 40px; padding: 8px 14px; }
+    .workspace-tabs { gap: 8px; margin-bottom: 12px; }
+    .wtab {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 1rem;
+    }
+    .panel { padding-top: 4px; }
+
+    /* لوحة القيادة */
+    .dashboard-section { margin-bottom: 1.5rem; }
+    .section-title { font-size: 1.2rem; margin-bottom: 12px; }
+    .command-summary {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .workspace-cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .workspace-card { padding: 16px; }
+    .workspace-card-link { min-height: 44px; display: inline-flex; align-items: center; padding: 10px 16px; }
+    .dashboard-two-col { grid-template-columns: 1fr; gap: 1.5rem; }
+    .notifications-list, .events-list { max-height: 240px; }
+    .charts-container { grid-template-columns: 1fr; gap: 1rem; }
+    .chart-wrap { min-height: 220px; }
+
+    /* المالية الموحدة */
+    .workspace-summary { max-height: 280px; }
+    .finance-ws-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 12px 0;
+    }
+
+    /* رحال */
+    .rahal-toolbar { flex-direction: column; align-items: stretch; gap: 12px; }
+    .rahal-toolbar .form-row { flex-direction: column; }
+    .rahal-actions { flex-direction: column; }
+    .rahal-actions .secondary-btn,
+    .rahal-actions .danger-btn { width: 100%; min-height: 44px; }
+    .plan-month-input { min-height: 44px; width: 100%; }
+    .calendar-strip-inner { gap: 6px; }
+    .cal-day { min-width: 2.5rem; padding: 8px; font-size: 0.9rem; }
+
+    /* تسجيل الدخول */
+    .login-shell { padding: 16px; align-items: flex-start; padding-top: 2rem; }
+    .login-card { width: 100%; max-width: 100%; padding: 24px; }
+    .login-card h1 { font-size: 1.5rem; }
+    .login-form input { min-height: 48px; font-size: 16px; }
+    .login-form .add-btn { width: 100%; min-height: 48px; }
+
+    /* مساحة العمل workspace */
+    .task-input-section .priority-select,
+    .task-input-section .category-select { min-width: 100%; }
 }
 
 .sidebar-brand h1 {
@@ -1707,40 +1890,6 @@ body {
     margin-top: 10px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .app-shell {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        border-left: none;
-        border-bottom: 2px solid #1f2937;
-    }
-    
-    .input-container {
-        flex-direction: column;
-    }
-    
-    .task-input {
-        min-width: 100%;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-    
-    .charts-container {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* Animations */
 @keyframes fadeIn {
     from {
@@ -1856,11 +2005,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-}
-@media (max-width: 768px) {
-    .dashboard-two-col {
-        grid-template-columns: 1fr;
-    }
 }
 .notifications-list, .events-list {
     max-height: 280px;
