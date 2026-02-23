@@ -50,8 +50,103 @@ body {
         gap: 6px;
     }
     .nav-label { display: none; }
-    .nav-btn { padding: 10px 14px; font-size: 0.9rem; }
-    .main-content { padding: 16px; min-width: 0; }
+    .nav-btn { padding: 10px 14px; font-size: 0.9rem; min-height: 44px; }
+    .main-content { padding: 12px 16px; min-width: 0; gap: 20px; }
+
+    /* المالية الشخصية — هاتف */
+    .finance-input-section,
+    .data-actions-section,
+    .finance-overview-section,
+    .budget-section,
+    .transactions-section,
+    .financial-goals-section,
+    .debt-management-section,
+    .subscriptions-section {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    .finance-input-section h2,
+    .finance-overview-section h2,
+    .budget-section h2,
+    .transactions-section h2,
+    .financial-goals-section h2,
+    .debt-management-section h2,
+    .subscriptions-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    .input-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .input-row .amount-input,
+    .input-row .description-input,
+    .transaction-type-select,
+    .finance-category-select,
+    .budget-input-field {
+        min-width: 100%;
+        width: 100%;
+    }
+    .finance-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .finance-stat-card {
+        padding: 16px;
+    }
+    .finance-stat-number { font-size: 1.4rem; }
+    .transactions-list {
+        max-height: none;
+        gap: 12px;
+    }
+    .transaction-item {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px;
+        gap: 10px;
+    }
+    .transaction-item .transaction-info { flex: 1; }
+    .transaction-item .transaction-right {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid #333;
+    }
+    .transaction-amount { font-size: 1.1rem; }
+    .task-btn.delete { min-height: 44px; padding: 10px 16px; }
+    .data-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .data-actions .secondary-btn,
+    .data-actions .danger-btn,
+    .data-actions .file-label {
+        width: 100%;
+        text-align: center;
+        min-height: 44px;
+    }
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .filter-buttons { flex-wrap: wrap; gap: 8px; }
+    .filter-btn { min-height: 40px; padding: 8px 14px; }
+    .goal-item, .debt-item, .subscription-item {
+        padding: 14px;
+    }
+    .goal-input, .debt-input, .subscription-input {
+        min-width: 100%;
+    }
+    .debt-payment-actions, .goals-input-container, .debt-input-container, .subscription-input-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .add-finance-btn, .set-budget-btn, .add-goal-btn, .add-debt-btn, .add-subscription-btn {
+        width: 100%;
+        min-height: 48px;
+    }
 }
 
 .sidebar-brand h1 {
@@ -492,6 +587,21 @@ body {
     color: #6b7280;
     font-size: 0.8rem;
     margin-right: 15px;
+}
+
+.transaction-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.transaction-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
 }
 
 /* Financial Goals Section */

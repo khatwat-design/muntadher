@@ -19,12 +19,22 @@ export class FinanceManager {
   async init() {
     try {
       const data = await api.get(`/workspaces/${PERSONAL_WID}/finance`);
-      this.transactions = (data.transactions || []).map((t) => ({
-        ...t,
-        date: t.date || t.transDate || t.trans_date,
-        month: t.month ?? (t.date ? new Date(t.date).getMonth() : new Date().getMonth()),
-        year: t.year ?? (t.date ? new Date(t.date).getFullYear() : new Date().getFullYear()),
-      }));
+      const raw = data.transactions || [];
+      this.transactions = raw.map((t) => {
+        const dateVal = t.date || t.transDate || t.trans_date;
+        const d = dateVal ? new Date(dateVal) : new Date();
+        return {
+          ...t,
+          id: t.id,
+          amount: Number(t.amount) || 0,
+          type: t.type || 'expense',
+          description: t.description || '',
+          category: t.category || 'other',
+          date: dateVal || d.toISOString(),
+          month: t.month ?? d.getMonth(),
+          year: t.year ?? d.getFullYear(),
+        };
+      });
       this.budget = Number(data.budget) || 0;
       this.goals = data.goals || [];
       this.debts = data.debts || [];
@@ -52,7 +62,14 @@ export class FinanceManager {
       year: now.getFullYear(),
     };
     const created = await api.post(`/workspaces/${PERSONAL_WID}/finance/transactions`, transaction);
-    this.transactions.push({ ...transaction, ...created, date: created.transDate || created.date || transaction.date });
+    const dateVal = created && (created.transDate || created.date || created.trans_date || transaction.date);
+    this.transactions.unshift({
+      ...transaction,
+      ...created,
+      id: created?.id || transaction.id,
+      date: dateVal || transaction.date,
+      amount: Number(created?.amount ?? transaction.amount) || 0,
+    });
     return transaction;
   }
 

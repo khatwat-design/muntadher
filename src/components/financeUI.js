@@ -381,6 +381,7 @@ export class FinanceUI {
     // Render transactions list
     renderTransactions() {
         const transactionsList = document.getElementById('transactionsList');
+        if (!transactionsList) return;
         const transactions = this.financeManager.getFilteredTransactions(this.currentFilter);
 
         if (transactions.length === 0) {
@@ -401,20 +402,25 @@ export class FinanceUI {
     createTransactionHTML(transaction) {
         const amountClass = transaction.type === 'income' ? 'income' : 'expense';
         const amountSign = transaction.type === 'income' ? '+' : '-';
-        const categoryText = this.getCategoryText(transaction.category);
-        const date = new Date(transaction.date).toLocaleDateString('ar-SA');
+        const categoryText = this.getCategoryText(transaction.category || 'other');
+        const dateVal = transaction.date || transaction.transDate || transaction.trans_date;
+        const date = dateVal ? new Date(dateVal).toLocaleDateString('ar-SA', { dateStyle: 'short' }) : '—';
+        const amount = Number(transaction.amount);
+        const amountStr = isFinite(amount) ? amount.toFixed(2) : '0.00';
 
         return `
             <div class="transaction-item">
                 <div class="transaction-info">
-                    <div class="transaction-description">${this.escapeHtml(transaction.description)}</div>
-                    <div class="transaction-category">${categoryText}</div>
+                    <div class="transaction-description">${this.escapeHtml(transaction.description || '—')}</div>
+                    <div class="transaction-meta">
+                        <span class="transaction-category">${categoryText}</span>
+                        <span class="transaction-date">${date}</span>
+                    </div>
                 </div>
-                <div class="transaction-amount ${amountClass}">
-                    ${amountSign}${transaction.amount.toFixed(2)} ${this.financeManager.currency}
+                <div class="transaction-right">
+                    <span class="transaction-amount ${amountClass}">${amountSign}${amountStr} ${this.financeManager.currency}</span>
+                    <button type="button" class="task-btn delete" data-action="delete-transaction" data-id="${this.escapeHtml(String(transaction.id))}">حذف</button>
                 </div>
-                <div class="transaction-date">${date}</div>
-                <button class="task-btn delete" data-action="delete-transaction" data-id="${this.escapeHtml(String(transaction.id))}">حذف</button>
             </div>
         `;
     }
