@@ -73,7 +73,7 @@ npm run build
 
 ```bash
 mkdir -p logs
-pm2 start ecosystem.config.js
+pm2 start ecosystem.config.cjs
 pm2 save
 pm2 startup
 ```
@@ -125,6 +125,21 @@ systemctl reload nginx
 | حالة التطبيق | `pm2 status` |
 | سجلات | `pm2 logs muntadher` |
 | إعادة تشغيل | `pm2 restart muntadher` |
-| تحديث بعد تعديلات | `cd /var/www/muntadher && git pull && npm ci && npm run build && pm2 restart muntadher` |
+| تحديث بعد تعديلات | انظر القسم التالي |
 
 بهذا يعمل نظام منتظر على البورت **4001** فقط ولا يتداخل مع نظام خطوات على بورتّه الحالي.
+
+---
+
+## تحديث السيرفر بعد دفع تعديلات من GitHub
+
+على السيرفر (بعد `ssh root@187.77.68.2`):
+
+```bash
+cd /var/www/muntadher
+git pull
+npm ci
+npm run build
+pm2 restart muntadher
+pm2 save
+```

@@ -1,6 +1,6 @@
 /**
  * PM2 — تشغيل التطبيق واستمراريته على السيرفر
- * الاستخدام: pm2 start ecosystem.config.js
+ * الاستخدام: pm2 start ecosystem.config.cjs
  */
 module.exports = {
   apps: [
