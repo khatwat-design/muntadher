@@ -26,6 +26,7 @@ const store = {
   suppliers: [],
   inventory_items: [],
   campaigns: [],
+  content_plan_items: [],
   study_terms: [],
   study_items: [],
   courses: [],
@@ -113,6 +114,7 @@ export const memoryAdapter = {
     if (updates.dueAt !== undefined) t.due_at = updates.dueAt;
     if (updates.completed !== undefined) {
       t.completed_at = updates.completed ? new Date() : null;
+      t.status = updates.completed ? 'done' : 'todo';
     }
     if (updates.completedAt !== undefined) t.completed_at = updates.completedAt;
     if (updates.timeSpent !== undefined) t.time_spent = updates.timeSpent;
@@ -512,6 +514,51 @@ export const memoryAdapter = {
     const i = store.campaigns.findIndex(x => x.id === campaignId);
     if (i === -1) return false;
     store.campaigns.splice(i, 1);
+    return true;
+  },
+
+  async listContentPlanItems(workspaceId, planMonth) {
+    return store.content_plan_items
+      .filter((c) => c.workspace_id === workspaceId && c.plan_month === planMonth)
+      .map(toCamel)
+      .sort((a, b) => (a.dayOfMonth ?? 0) - (b.dayOfMonth ?? 0) || (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  },
+  async addContentPlanItem(workspaceId, item) {
+    const row = {
+      id: item.id || id(),
+      workspace_id: workspaceId,
+      plan_month: item.planMonth || item.plan_month,
+      day_of_month: item.dayOfMonth ?? item.day_of_month ?? null,
+      title: item.title,
+      notes: item.notes || null,
+      sort_order: item.sortOrder ?? item.sort_order ?? 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+    store.content_plan_items.push(row);
+    return toCamel(row);
+  },
+  async updateContentPlanItem(itemId, updates) {
+    const c = store.content_plan_items.find((x) => x.id === itemId);
+    if (!c) return null;
+    if (updates.title !== undefined) c.title = updates.title;
+    if (updates.notes !== undefined) c.notes = updates.notes;
+    if (updates.dayOfMonth !== undefined) c.day_of_month = updates.dayOfMonth;
+    if (updates.day_of_month !== undefined) c.day_of_month = updates.day_of_month;
+    if (updates.sortOrder !== undefined) c.sort_order = updates.sortOrder;
+    c.updated_at = new Date();
+    return toCamel(c);
+  },
+  async deleteContentPlanItem(itemId) {
+    const i = store.content_plan_items.findIndex((x) => x.id === itemId);
+    if (i === -1) return false;
+    store.content_plan_items.splice(i, 1);
+    return true;
+  },
+  async resetContentPlanMonth(workspaceId, planMonth) {
+    store.content_plan_items = store.content_plan_items.filter(
+      (c) => !(c.workspace_id === workspaceId && c.plan_month === planMonth)
+    );
     return true;
   },
 

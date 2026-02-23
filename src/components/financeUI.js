@@ -68,6 +68,35 @@ export class FinanceUI {
                 e.target.value = '';
             });
         }
+
+        document.getElementById('financeTab')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action][data-id]');
+            if (!btn) return;
+            const id = btn.getAttribute('data-id');
+            switch (btn.getAttribute('data-action')) {
+                case 'delete-transaction':
+                    this.deleteTransaction(id);
+                    break;
+                case 'delete-goal':
+                    this.deleteGoal(id);
+                    break;
+                case 'update-goal':
+                    this.updateGoalProgress(id);
+                    break;
+                case 'delete-debt':
+                    this.deleteDebt(id);
+                    break;
+                case 'partial-payment-debt':
+                    this.makePartialPayment(id);
+                    break;
+                case 'full-payment-debt':
+                    this.makeFullPayment(id);
+                    break;
+                case 'delete-subscription':
+                    this.deleteSubscription(id);
+                    break;
+            }
+        });
     }
 
     // Add new transaction
@@ -385,7 +414,7 @@ export class FinanceUI {
                     ${amountSign}${transaction.amount.toFixed(2)} ${this.financeManager.currency}
                 </div>
                 <div class="transaction-date">${date}</div>
-                <button class="task-btn delete" onclick="financeUI.deleteTransaction(${transaction.id})">حذف</button>
+                <button class="task-btn delete" data-action="delete-transaction" data-id="${this.escapeHtml(String(transaction.id))}">حذف</button>
             </div>
         `;
     }
@@ -431,10 +460,10 @@ export class FinanceUI {
                     <span>متبقي ${daysLeft} يوم</span>
                 </div>
                 <div class="goal-actions">
-                    <input type="number" id="goal-amount-${goal.id}" placeholder="تحديث المبلغ المحقق" class="goal-input" step="0.01" min="0" max="${goal.targetAmount}">
-                    <button class="task-btn" onclick="financeUI.updateGoalProgress(${goal.id})">تحديث</button>
+                    <input type="number" id="goal-amount-${this.escapeHtml(String(goal.id))}" placeholder="تحديث المبلغ المحقق" class="goal-input" step="0.01" min="0" max="${goal.targetAmount}">
+                    <button class="task-btn" data-action="update-goal" data-id="${this.escapeHtml(String(goal.id))}">تحديث</button>
                 </div>
-                <button class="task-btn delete" onclick="financeUI.deleteGoal(${goal.id})" style="margin-top: 10px;">حذف</button>
+                <button class="task-btn delete" data-action="delete-goal" data-id="${this.escapeHtml(String(goal.id))}" style="margin-top: 10px;">حذف</button>
             </div>
         `;
     }
@@ -511,11 +540,11 @@ export class FinanceUI {
                     </div>
                 </div>
                 <div class="debt-payment-actions">
-                    <input type="number" id="payment-${debt.id}" placeholder="مبلغ التسديد" class="debt-payment-input" step="0.01" min="0" max="${remaining}">
-                    <button class="task-btn" onclick="financeUI.makePartialPayment(${debt.id})" style="background: #f59e0b;">تسديد جزئي</button>
-                    <button class="task-btn" onclick="financeUI.makeFullPayment(${debt.id})" style="background: #10b981;">تسديد كلي</button>
+                    <input type="number" id="payment-${this.escapeHtml(String(debt.id))}" placeholder="مبلغ التسديد" class="debt-payment-input" step="0.01" min="0" max="${remaining}">
+                    <button class="task-btn" data-action="partial-payment-debt" data-id="${this.escapeHtml(String(debt.id))}" style="background: #f59e0b;">تسديد جزئي</button>
+                    <button class="task-btn" data-action="full-payment-debt" data-id="${this.escapeHtml(String(debt.id))}" style="background: #10b981;">تسديد كلي</button>
                 </div>
-                <button class="task-btn delete" onclick="financeUI.deleteDebt(${debt.id})" style="margin-top: 10px;">حذف</button>
+                <button class="task-btn delete" data-action="delete-debt" data-id="${this.escapeHtml(String(debt.id))}" style="margin-top: 10px;">حذف</button>
             </div>
         `;
     }
@@ -557,7 +586,7 @@ export class FinanceUI {
                     <span>الدفعة التالية: ${nextPayment}</span>
                 </div>
                 <span class="subscription-status ${status}">${statusText}</span>
-                <button class="task-btn delete" onclick="financeUI.deleteSubscription(${subscription.id})" style="margin-top: 10px;">حذف</button>
+                <button class="task-btn delete" data-action="delete-subscription" data-id="${this.escapeHtml(String(subscription.id))}" style="margin-top: 10px;">حذف</button>
             </div>
         `;
     }

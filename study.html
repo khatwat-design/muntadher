@@ -22,24 +22,23 @@
         <span class="nav-label">عام</span>
         <a class="nav-btn" href="/finance-unified.html">المالية الموحدة</a>
         <a class="nav-btn" href="/finance.html">المالية الشخصية</a>
-        <a class="nav-btn" href="/analytics.html">التحليلات</a>
         <button id="logoutBtn" class="nav-btn logout-btn">تسجيل خروج</button>
       </nav>
     </aside>
     <main class="main-content">
       <div class="workspace-tabs">
-        <button class="wtab active" data-tab="terms">الفصول الدراسية</button>
+        <button class="wtab active" data-tab="terms">المواد</button>
         <button class="wtab" data-tab="items">جدول المحاضرات والمهام</button>
       </div>
 
       <div id="termsPanel" class="panel active">
         <section class="section-card">
-          <h2>الفصول / الفترات الدراسية</h2>
+          <h2>المواد الدراسية</h2>
           <div class="form-row">
-            <input type="text" id="termName" placeholder="اسم الفصل">
+            <input type="text" id="termName" placeholder="اسم المادة">
             <input type="date" id="termStart">
             <input type="date" id="termEnd">
-            <button id="termAdd" class="add-btn">إضافة فصل</button>
+            <button id="termAdd" class="add-btn">إضافة مادة</button>
           </div>
           <ul id="termsList" class="item-list"></ul>
         </section>

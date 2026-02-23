@@ -4,7 +4,6 @@ import { requireAuth, logout } from '../auth/guard.js';
 import { api } from '../api/client.js';
 
 const WORKSPACES = [
-  { id: 'personal', name: 'الشخصي' },
   { id: 'khotawat', name: 'خطوات' },
   { id: 'jahzeen', name: 'جاهزين' },
   { id: 'rahal', name: 'رحال' },

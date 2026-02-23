@@ -1,332 +1,239 @@
 import { api } from '../api/client.js';
 
-// Data Manager for Smart Task Manager
+const PERSONAL_WID = 'personal';
+
+/**
+ * DataManager — المهام الشخصية عبر مساحة personal في الخادم (بدون Apps Script).
+ */
 export class DataManager {
-    constructor() {
-        this.tasks = [];
+  constructor() {
+    this.tasks = [];
+  }
+
+  normalizeTaskId(taskId) {
+    return String(taskId);
+  }
+
+  serverToTask(row) {
+    const meta = (row.meta && typeof row.meta === 'object') ? row.meta : (typeof row.meta === 'string' ? (() => { try { return JSON.parse(row.meta); } catch (_) { return {}; } })() : {});
+    return {
+      id: row.id,
+      text: row.title || row.text || '',
+      completed: row.status === 'done' || !!(row.completedAt || row.completed_at),
+      completedAt: row.completedAt || row.completed_at || null,
+      createdAt: row.createdAt || row.created_at || new Date().toISOString(),
+      timeSpent: Number.isFinite(row.timeSpent) ? row.timeSpent : (row.time_spent ?? 0),
+      repeat: meta.repeat || row.repeatType || row.repeat_type || 'none',
+      priority: row.priority || 'normal',
+      category: meta.category || 'personal',
+      nextDue: row.nextDue || row.next_due || null,
+    };
+  }
+
+  async init() {
+    try {
+      const list = await api.get(`/workspaces/${PERSONAL_WID}/tasks`);
+      this.tasks = Array.isArray(list) ? list.map((t) => this.serverToTask(t)) : [];
+    } catch (e) {
+      console.error('DataManager init', e);
+      this.tasks = [];
     }
+  }
 
-    normalizeTaskId(taskId) {
-        return String(taskId);
+  async addTask(taskText, priority = 'normal', category = 'personal', repeat = 'none') {
+    const text = String(taskText || '').trim();
+    if (!text) return null;
+
+    const now = new Date();
+    const nextDue = this.calculateNextDue(repeat);
+    const payload = {
+      id: `${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
+      title: text,
+      text,
+      status: 'todo',
+      priority: priority || 'normal',
+      meta: { category: category || 'personal', repeat: repeat || 'none' },
+      nextDue: nextDue || null,
+      repeatType: repeat || 'none',
+    };
+
+    const created = await api.post(`/workspaces/${PERSONAL_WID}/tasks`, payload);
+    const task = this.serverToTask(created);
+    this.tasks.push(task);
+    return task;
+  }
+
+  calculateNextDue(repeat) {
+    if (repeat === 'none') return null;
+    const now = new Date();
+    const next = new Date(now);
+    switch (repeat) {
+      case 'daily':
+        next.setDate(next.getDate() + 1);
+        break;
+      case 'weekly':
+        next.setDate(next.getDate() + 7);
+        break;
+      case 'monthly':
+        next.setMonth(next.getMonth() + 1);
+        break;
+      default:
+        return null;
     }
+    return next.toISOString();
+  }
 
-    normalizeTask(task) {
-        return {
-            ...task,
-            id: task.id,
-            completed: task.completed === true || task.completed === 'true',
-            completedAt: task.completedAt || null,
-            createdAt: task.createdAt || new Date().toISOString(),
-            timeSpent: Number.isFinite(task.timeSpent) ? task.timeSpent : 0,
-            repeat: task.repeat || 'none',
-            priority: task.priority || 'normal',
-            category: task.category || 'personal'
-        };
+  async completeRecurringTask(taskId) {
+    const normalizedId = this.normalizeTaskId(taskId);
+    const task = this.tasks.find((t) => this.normalizeTaskId(t.id) === normalizedId);
+    if (task && task.repeat !== 'none') {
+      await this.setTaskCompleted(taskId, true);
+      return await this.addTask(task.text, task.priority, task.category, task.repeat);
     }
+    return this.setTaskCompleted(taskId, true);
+  }
 
-    async init() {
-        const data = await api.get('/tasks');
-        this.tasks = Array.isArray(data) ? data.map(task => this.normalizeTask(task)) : [];
+  async setTaskCompleted(taskId, completed) {
+    const normalizedId = this.normalizeTaskId(taskId);
+    const task = this.tasks.find((t) => this.normalizeTaskId(t.id) === normalizedId);
+    if (!task) return null;
+
+    task.completed = Boolean(completed);
+    task.completedAt = completed ? new Date().toISOString() : null;
+    await api.put(`/workspaces/${PERSONAL_WID}/tasks/${task.id}`, {
+      completed: task.completed,
+      completedAt: task.completedAt,
+      status: task.completed ? 'done' : 'todo',
+    });
+    return task;
+  }
+
+  async updateTaskText(taskId, text) {
+    const normalizedId = this.normalizeTaskId(taskId);
+    const task = this.tasks.find((t) => this.normalizeTaskId(t.id) === normalizedId);
+    if (!task) return null;
+    const trimmed = String(text || '').trim();
+    await api.put(`/workspaces/${PERSONAL_WID}/tasks/${task.id}`, { title: trimmed, text: trimmed });
+    task.text = trimmed;
+    return task;
+  }
+
+  async deleteTask(taskId) {
+    const normalizedId = this.normalizeTaskId(taskId);
+    const idx = this.tasks.findIndex((t) => this.normalizeTaskId(t.id) === normalizedId);
+    if (idx !== -1) {
+      await api.del(`/workspaces/${PERSONAL_WID}/tasks/${this.tasks[idx].id}`);
+      this.tasks.splice(idx, 1);
     }
+  }
 
-    // Add new task
-    async addTask(taskText, priority = 'normal', category = 'personal', repeat = 'none') {
-        const text = String(taskText || '').trim();
-        if (!text) return null;
+  getAllTasks() {
+    return this.tasks;
+  }
 
-        const now = new Date();
-        const task = {
-            id: `${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
-            text: text,
-            priority: priority || 'normal',
-            category: category || 'personal',
-            repeat: repeat || 'none',
-            completed: false,
-            createdAt: now.toISOString(),
-            completedAt: null,
-            timeSpent: 0,
-            nextDue: this.calculateNextDue(repeat || 'none')
-        };
+  getTasksByCategory(category) {
+    return this.tasks.filter((t) => t.category === category && !t.completed);
+  }
 
-        await api.post('/tasks', {
-            id: task.id,
-            text: task.text,
-            priority: task.priority,
-            category: task.category,
-            repeat: task.repeat,
-            createdAt: task.createdAt,
-            nextDue: task.nextDue
-        });
-        this.tasks.push(task);
-        return task;
+  getFilteredTasks(filter = 'all', category = 'all') {
+    let filtered = this.tasks;
+    if (filter === 'completed') filtered = filtered.filter((t) => t.completed);
+    else if (filter === 'pending') filtered = filtered.filter((t) => !t.completed);
+    if (category !== 'all') filtered = filtered.filter((t) => t.category === category);
+    return filtered;
+  }
+
+  searchTasks(query) {
+    const q = (query || '').toLowerCase().trim();
+    if (!q) return this.tasks;
+    return this.tasks.filter(
+      (t) =>
+        (t.text && t.text.toLowerCase().includes(q)) ||
+        (t.category && t.category.toLowerCase().includes(q)) ||
+        (t.priority && t.priority.toLowerCase().includes(q)) ||
+        (t.repeat && t.repeat.toLowerCase().includes(q))
+    );
+  }
+
+  getRecurringTasks() {
+    return this.tasks.filter((t) => t.repeat !== 'none' && !t.completed);
+  }
+
+  async checkDueRecurringTasks() {
+    const now = new Date();
+    const newTasks = [];
+    for (const task of this.getRecurringTasks()) {
+      if (task.nextDue && new Date(task.nextDue) <= now) {
+        const created = await this.addTask(task.text, task.priority, task.category, task.repeat);
+        if (created) newTasks.push(created);
+      }
     }
+    return newTasks;
+  }
 
-    // Calculate next due date for recurring tasks
-    calculateNextDue(repeat) {
-        if (repeat === 'none') return null;
-        
-        const now = new Date();
-        const next = new Date(now);
-        
-        switch (repeat) {
-            case 'daily':
-                next.setDate(next.getDate() + 1);
-                break;
-            case 'weekly':
-                next.setDate(next.getDate() + 7);
-                break;
-            case 'monthly':
-                next.setMonth(next.getMonth() + 1);
-                break;
-        }
-        
-        return next.toISOString();
+  getTaskStats() {
+    const total = this.tasks.length;
+    const completed = this.tasks.filter((t) => t.completed).length;
+    const work = this.tasks.filter((t) => t.category === 'work').length;
+    const personal = this.tasks.filter((t) => t.category === 'personal').length;
+    const study = this.tasks.filter((t) => t.category === 'study').length;
+    const recurring = this.getRecurringTasks().length;
+    const urgent = this.tasks.filter((t) => t.priority === 'urgent' && !t.completed).length;
+    return {
+      total,
+      completed,
+      pending: total - completed,
+      urgent,
+      important: this.tasks.filter((t) => t.priority === 'important' && !t.completed).length,
+      normal: this.tasks.filter((t) => t.priority === 'normal' && !t.completed).length,
+      work,
+      personal,
+      study,
+      recurring,
+      productivityRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }
+
+  getTasksByPriority(priority) {
+    return this.tasks.filter((t) => t.priority === priority && !t.completed);
+  }
+
+  getProductivityData(days = 7) {
+    const data = [];
+    const today = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      data.push({
+        date: date.toLocaleDateString('ar-SA', { weekday: 'short' }),
+        created: this.tasks.filter((t) => t.createdAt && t.createdAt.startsWith(dateStr)).length,
+        completed: this.tasks.filter((t) => t.completedAt && t.completedAt.startsWith(dateStr)).length,
+      });
     }
+    return data;
+  }
 
-    // Complete recurring task
-    async completeRecurringTask(taskId) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const task = this.tasks.find(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (task && task.repeat !== 'none') {
-            await this.setTaskCompleted(taskId, true);
+  getPriorityDistribution() {
+    const s = this.getTaskStats();
+    return { urgent: s.urgent, important: s.important, normal: s.normal };
+  }
 
-            // Create new instance of the task
-            const newTask = {
-                ...task,
-                id: Date.now(),
-                completed: false,
-                completedAt: null,
-                createdAt: new Date().toISOString(),
-                nextDue: this.calculateNextDue(task.repeat)
-            };
+  async clearAllData() {
+    await Promise.all(this.tasks.map((t) => api.del(`/workspaces/${PERSONAL_WID}/tasks/${t.id}`)));
+    this.tasks = [];
+  }
 
-            return await this.addTask(newTask.text, newTask.priority, newTask.category, newTask.repeat);
-        }
-        return this.toggleTask(taskId);
+  exportData() {
+    return { tasks: this.tasks, exportedAt: new Date().toISOString() };
+  }
+
+  async importData(data) {
+    if (!data || !Array.isArray(data.tasks)) return false;
+    await this.clearAllData();
+    for (const t of data.tasks) {
+      await this.addTask(t.text, t.priority || 'normal', t.category || 'personal', t.repeat || 'none');
     }
-
-    // Toggle task completion
-    async toggleTask(taskId) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const task = this.tasks.find(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (task) {
-            await this.setTaskCompleted(taskId, !Boolean(task.completed));
-        }
-        return task;
-    }
-
-    // Set task completion state explicitly
-    async setTaskCompleted(taskId, completed) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const task = this.tasks.find(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (!task) return null;
-
-        const wasCompleted = Boolean(task.completed);
-        const nextCompleted = Boolean(completed);
-        if (wasCompleted === nextCompleted) return task;
-
-        task.completed = nextCompleted;
-        task.completedAt = nextCompleted ? new Date().toISOString() : null;
-            await api.put(`/tasks/${task.id}`, {
-            completed: task.completed,
-            completedAt: task.completedAt
-        });
-        return task;
-    }
-
-    async updateTaskText(taskId, text) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const task = this.tasks.find(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (!task) return null;
-        task.text = String(text || '').trim();
-        await api.put(`/tasks/${task.id}`, { text: task.text });
-        return task;
-    }
-
-    // Delete task
-    async deleteTask(taskId) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const taskIndex = this.tasks.findIndex(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (taskIndex !== -1) {
-            const task = this.tasks[taskIndex];
-            await api.del(`/tasks/${task.id}`);
-            this.tasks.splice(taskIndex, 1);
-        }
-    }
-
-    // Update task time spent
-    async updateTaskTime(taskId, timeSpent) {
-        const normalizedId = this.normalizeTaskId(taskId);
-        const task = this.tasks.find(t => this.normalizeTaskId(t.id) === normalizedId);
-        if (task) {
-            task.timeSpent = timeSpent;
-            await api.put(`/tasks/${task.id}`, { timeSpent });
-        }
-    }
-
-    // Get all tasks
-    getAllTasks() {
-        return this.tasks;
-    }
-
-    // Get tasks by category
-    getTasksByCategory(category) {
-        return this.tasks.filter(task => task.category === category && !task.completed);
-    }
-
-    // Get filtered tasks with category support
-    getFilteredTasks(filter = 'all', category = 'all') {
-        let filtered = this.tasks;
-        
-        // Apply status filter
-        switch (filter) {
-            case 'completed':
-                filtered = filtered.filter(task => task.completed);
-                break;
-            case 'pending':
-                filtered = filtered.filter(task => !task.completed);
-                break;
-        }
-        
-        // Apply category filter
-        if (category !== 'all') {
-            filtered = filtered.filter(task => task.category === category);
-        }
-        
-        return filtered;
-    }
-
-    // Search tasks
-    searchTasks(query) {
-        const searchTerm = query.toLowerCase().trim();
-        if (!searchTerm) return this.tasks;
-        
-        return this.tasks.filter(task => 
-            task.text.toLowerCase().includes(searchTerm) ||
-            task.category.toLowerCase().includes(searchTerm) ||
-            task.priority.toLowerCase().includes(searchTerm) ||
-            task.repeat.toLowerCase().includes(searchTerm)
-        );
-    }
-
-    // Get recurring tasks
-    getRecurringTasks() {
-        return this.tasks.filter(task => task.repeat !== 'none' && !task.completed);
-    }
-
-    // Check and create due recurring tasks
-    async checkDueRecurringTasks() {
-        const now = new Date();
-        const recurringTasks = this.getRecurringTasks();
-        const newTasks = [];
-
-        for (const task of recurringTasks) {
-            if (task.nextDue && new Date(task.nextDue) <= now) {
-                const created = await this.addTask(task.text, task.priority, task.category, task.repeat);
-                if (created) {
-                    newTasks.push(created);
-                }
-            }
-        }
-
-        return newTasks;
-    }
-
-    // Get task statistics
-    getTaskStats() {
-        const total = this.tasks.length;
-        const completed = this.tasks.filter(task => task.completed).length;
-        const pending = total - completed;
-        const urgent = this.getTasksByPriority('urgent').length;
-        const important = this.getTasksByPriority('important').length;
-        const normal = this.getTasksByPriority('normal').length;
-        
-        // Category stats
-        const work = this.getTasksByCategory('work').length;
-        const personal = this.getTasksByCategory('personal').length;
-        const study = this.getTasksByCategory('study').length;
-        
-        // Recurring tasks
-        const recurring = this.getRecurringTasks().length;
-
-        return {
-            total,
-            completed,
-            pending,
-            urgent,
-            important,
-            normal,
-            work,
-            personal,
-            study,
-            recurring,
-            productivityRate: total > 0 ? Math.round((completed / total) * 100) : 0
-        };
-    }
-
-    // Get tasks by priority (fixed to use existing tasks)
-    getTasksByPriority(priority) {
-        return this.tasks.filter(task => task.priority === priority && !task.completed);
-    }
-
-    // Get productivity data for charts
-    getProductivityData(days = 7) {
-        const data = [];
-        const today = new Date();
-
-        for (let i = days - 1; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split('T')[0];
-
-            const created = this.tasks.filter(t => t.createdAt && t.createdAt.startsWith(dateStr)).length;
-            const completed = this.tasks.filter(t => t.completedAt && t.completedAt.startsWith(dateStr)).length;
-
-            data.push({
-                date: date.toLocaleDateString('ar-SA', { weekday: 'short' }),
-                created,
-                completed
-            });
-        }
-
-        return data;
-    }
-
-    // Get priority distribution
-    getPriorityDistribution() {
-        const stats = this.getTaskStats();
-        return {
-            urgent: stats.urgent,
-            important: stats.important,
-            normal: stats.normal
-        };
-    }
-
-    // Clear all data
-    async clearAllData() {
-        const deletions = this.tasks.map(t => api.del(`/tasks/${t.id}`));
-        await Promise.all(deletions);
-        this.tasks = [];
-    }
-
-    // Export data
-    exportData() {
-        return {
-            tasks: this.tasks,
-            exportedAt: new Date().toISOString()
-        };
-    }
-
-    // Import data
-    async importData(data) {
-        if (data.tasks) {
-            await this.clearAllData();
-            for (const task of data.tasks) {
-                await this.addTask(task.text, task.priority, task.category, task.repeat);
-            }
-            return true;
-        }
-        return false;
-    }
+    return true;
+  }
 }
-

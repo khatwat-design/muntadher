@@ -285,7 +285,7 @@ app.delete('/api/finance/subscriptions/:id', async (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '..', 'dist');
   app.use(express.static(distPath));
-  app.get(['/', '/index.html', '/finance.html', '/analytics.html', '/login.html', '/command-center.html', '/workspace.html', '/khotawat.html', '/jahzeen.html', '/rahal.html', '/study.html', '/finance-unified.html'], (req, res) => {
+  app.get(['/', '/index.html', '/finance.html', '/login.html', '/command-center.html', '/workspace.html', '/khotawat.html', '/jahzeen.html', '/rahal.html', '/study.html', '/finance-unified.html'], (req, res) => {
     const filePath = req.path === '/' ? 'index.html' : req.path.slice(1);
     res.sendFile(path.join(distPath, filePath));
   });

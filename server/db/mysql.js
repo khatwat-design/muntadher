@@ -129,7 +129,10 @@ export const mysqlAdapter = {
     if (updates.status !== undefined) { sets.push('status = ?'); params.push(updates.status); }
     if (updates.priority !== undefined) { sets.push('priority = ?'); params.push(updates.priority); }
     if (updates.dueAt !== undefined) { sets.push('due_at = ?'); params.push(updates.dueAt); }
-    if (updates.completed !== undefined) { sets.push('completed_at = ?'); params.push(updates.completed ? new Date() : null); }
+    if (updates.completed !== undefined) {
+      sets.push('completed_at = ?'); params.push(updates.completed ? new Date() : null);
+      sets.push('status = ?'); params.push(updates.completed ? 'done' : 'todo');
+    }
     if (updates.completedAt !== undefined) { sets.push('completed_at = ?'); params.push(updates.completedAt); }
     if (updates.timeSpent !== undefined) { sets.push('time_spent = ?'); params.push(updates.timeSpent); }
     if (updates.nextDue !== undefined) { sets.push('next_due = ?'); params.push(updates.nextDue); }
@@ -487,6 +490,55 @@ export const mysqlAdapter = {
   async deleteCampaign(campaignId) {
     const [r] = await pool.execute('DELETE FROM campaigns WHERE id = ?', [campaignId]);
     return r.affectedRows > 0;
+  },
+
+  async listContentPlanItems(workspaceId, planMonth) {
+    const rows = await query(
+      'SELECT * FROM content_plan_items WHERE workspace_id = ? AND plan_month = ? ORDER BY day_of_month ASC, sort_order ASC',
+      [workspaceId, planMonth]
+    );
+    return rows.map(toCamel);
+  },
+  async addContentPlanItem(workspaceId, item) {
+    const cid = item.id || id();
+    await query(
+      'INSERT INTO content_plan_items (id, workspace_id, plan_month, day_of_month, title, notes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [
+        cid,
+        workspaceId,
+        item.planMonth || item.plan_month,
+        item.dayOfMonth ?? item.day_of_month ?? null,
+        item.title,
+        item.notes || null,
+        item.sortOrder ?? item.sort_order ?? 0,
+      ]
+    );
+    return toCamel((await queryOne('SELECT * FROM content_plan_items WHERE id = ?', [cid])));
+  },
+  async updateContentPlanItem(itemId, updates) {
+    const sets = [];
+    const params = [];
+    if (updates.title !== undefined) { sets.push('title = ?'); params.push(updates.title); }
+    if (updates.notes !== undefined) { sets.push('notes = ?'); params.push(updates.notes); }
+    if (updates.dayOfMonth !== undefined) { sets.push('day_of_month = ?'); params.push(updates.dayOfMonth); }
+    if (updates.day_of_month !== undefined) { sets.push('day_of_month = ?'); params.push(updates.day_of_month); }
+    if (updates.sortOrder !== undefined) { sets.push('sort_order = ?'); params.push(updates.sortOrder); }
+    if (sets.length === 0) return toCamel(await queryOne('SELECT * FROM content_plan_items WHERE id = ?', [itemId]));
+    params.push(itemId);
+    await query(`UPDATE content_plan_items SET ${sets.join(', ')} WHERE id = ?`, params);
+    const row = await queryOne('SELECT * FROM content_plan_items WHERE id = ?', [itemId]);
+    return row ? toCamel(row) : null;
+  },
+  async deleteContentPlanItem(itemId) {
+    const [r] = await pool.execute('DELETE FROM content_plan_items WHERE id = ?', [itemId]);
+    return r.affectedRows > 0;
+  },
+  async resetContentPlanMonth(workspaceId, planMonth) {
+    const [r] = await pool.execute('DELETE FROM content_plan_items WHERE workspace_id = ? AND plan_month = ?', [
+      workspaceId,
+      planMonth,
+    ]);
+    return true;
   },
 
   async listStudyTerms(workspaceId) {

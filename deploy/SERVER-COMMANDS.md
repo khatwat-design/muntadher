@@ -143,3 +143,14 @@ npm run build
 pm2 restart muntadher
 pm2 save
 ```
+
+**إذا ظهر خطأ:** `untracked working tree files would be overwritten by merge` (مثلاً `ecosystem.config.cjs`)، احذف الملف غير المتتبع ثم أعد السحب:
+
+```bash
+rm -f ecosystem.config.cjs   # أو اسم الملف الذي يظهر في الخطأ
+git pull
+npm ci
+npm run build
+pm2 restart muntadher
+pm2 save
+```

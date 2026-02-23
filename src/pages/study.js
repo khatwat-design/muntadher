@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function fillTermSelect() {
   const sel = document.getElementById('itemTerm');
   if (!sel) return;
-  sel.innerHTML = '<option value="">-- الفصل --</option>' + (termsCache || []).map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+  sel.innerHTML = '<option value="">-- المادة --</option>' + (termsCache || []).map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
 }
 
 async function loadTerms() {
@@ -44,7 +44,7 @@ async function loadTerms() {
           <button class="small-btn delete-term" data-id="${t.id}">حذف</button>
         </span>
       </li>
-    `).join('') || '<li class="empty-msg">لا فصول</li>';
+    `).join('') || '<li class="empty-msg">لا مواد</li>';
     el.querySelectorAll('.delete-term').forEach(b => b.addEventListener('click', () => deleteTerm(b.dataset.id)));
     fillTermSelect();
   } catch (e) {
@@ -56,7 +56,7 @@ async function addTerm() {
   const name = document.getElementById('termName').value.trim();
   const startDate = document.getElementById('termStart').value;
   const endDate = document.getElementById('termEnd').value;
-  if (!name || !startDate || !endDate) { alert('أدخل اسم الفصل وتواريخ البداية والنهاية'); return; }
+  if (!name || !startDate || !endDate) { alert('أدخل اسم المادة وتواريخ البداية والنهاية'); return; }
   try {
     await api.post(`/workspaces/${WID}/study/terms`, { name, startDate, endDate });
     document.getElementById('termName').value = '';
@@ -67,7 +67,7 @@ async function addTerm() {
 }
 
 async function deleteTerm(id) {
-  if (!confirm('حذف الفصل؟')) return;
+  if (!confirm('حذف المادة؟')) return;
   try {
     await api.del(`/workspaces/${WID}/study/terms/${id}`);
     await loadTerms();

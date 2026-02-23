@@ -341,6 +341,21 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   INDEX idx_subs_workspace (workspace_id)
 );
 
+-- ----- رحال: خطة محتوى شهرية -----
+CREATE TABLE IF NOT EXISTS content_plan_items (
+  id VARCHAR(64) PRIMARY KEY,
+  workspace_id VARCHAR(32) NOT NULL,
+  plan_month VARCHAR(7) NOT NULL COMMENT 'YYYY-MM',
+  day_of_month INT NULL COMMENT '1-31 أو NULL لعموم الشهر',
+  title VARCHAR(255) NOT NULL,
+  notes TEXT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE,
+  INDEX idx_cp_workspace_month (workspace_id, plan_month)
+);
+
 -- ============================================================
 -- بيانات أولية: المساحات الافتراضية
 -- ============================================================

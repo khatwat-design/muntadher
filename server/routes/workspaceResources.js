@@ -200,6 +200,37 @@ router.delete('/workspaces/:wid/campaigns/:id', wrap(async (req, res) => {
   res.status(204).send();
 }));
 
+// رحال: خطة محتوى شهرية
+router.get('/workspaces/:wid/content-plan', wrap(async (req, res) => {
+  const month = req.query.month || getCurrentMonthKey();
+  const list = await db.listContentPlanItems(wid(req), month);
+  res.json(list);
+}));
+router.post('/workspaces/:wid/content-plan', wrap(async (req, res) => {
+  const month = req.query.month || req.body.planMonth || getCurrentMonthKey();
+  const item = { ...req.body, planMonth: req.body.planMonth || month };
+  res.status(201).json(await db.addContentPlanItem(wid(req), item));
+}));
+router.put('/workspaces/:wid/content-plan/:id', wrap(async (req, res) => {
+  const row = await db.updateContentPlanItem(req.params.id, req.body);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  res.json(row);
+}));
+router.delete('/workspaces/:wid/content-plan/:id', wrap(async (req, res) => {
+  const ok = await db.deleteContentPlanItem(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Not found' });
+  res.status(204).send();
+}));
+router.post('/workspaces/:wid/content-plan/reset', wrap(async (req, res) => {
+  const month = req.body.month || req.query.month || getCurrentMonthKey();
+  await db.resetContentPlanMonth(wid(req), month);
+  res.json({ ok: true, month });
+}));
+function getCurrentMonthKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
 // Study terms & items (الدراسة)
 router.get('/workspaces/:wid/study/terms', wrap(async (req, res) => {
   res.json(await db.listStudyTerms(wid(req)));
