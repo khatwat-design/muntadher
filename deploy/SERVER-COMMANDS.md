@@ -144,13 +144,45 @@ pm2 restart muntadher
 pm2 save
 ```
 
-**إذا ظهر خطأ:** `untracked working tree files would be overwritten by merge` (مثلاً `ecosystem.config.cjs`)، احذف الملف غير المتتبع ثم أعد السحب:
+---
 
+### إذا اللصق (Paste) لا يعمل في الطرفية
+
+جرّب واحدة من الطرق التالية:
+
+1. **لصق بأمر واحد (سطر واحد):** انسخ السطر التالي كاملاً والصقه مرة واحدة:
+   ```bash
+   cd /var/www/muntadher && git pull && npm ci && npm run build && pm2 restart muntadher && pm2 save
+   ```
+
+2. **استخدام سكربت التحديث:** اكتب أو انسخ أمراً واحداً في كل مرة:
+   ```bash
+   cd /var/www/muntadher
+   ```
+   اضغط Enter، ثم:
+   ```bash
+   git pull
+   ```
+   اضغط Enter، ثم:
+   ```bash
+   bash deploy/update-server.sh
+   ```
+   (سكربت `deploy/update-server.sh` ينجز: npm ci، build، pm2 restart، pm2 save)
+
+3. **كتابة الأوامر يدوياً سطراً سطراً:**
+   - `cd /var/www/muntadher`
+   - `git pull`
+   - `npm ci`
+   - `npm run build`
+   - `pm2 restart muntadher`
+   - `pm2 save`
+
+4. **في بعض برامج SSH:** اللصق يعمل بزر الفأرة الأيمن أو **Shift+Insert** بدل Ctrl+V.
+
+---
+
+**إذا ظهر خطأ:** `untracked working tree files would be overwritten by merge` (مثلاً `ecosystem.config.cjs`)، نفّذ أولاً:
 ```bash
-rm -f ecosystem.config.cjs   # أو اسم الملف الذي يظهر في الخطأ
-git pull
-npm ci
-npm run build
-pm2 restart muntadher
-pm2 save
+rm -f ecosystem.config.cjs
 ```
+ثم أعد سطر التحديث أو الأوامر من جديد.
